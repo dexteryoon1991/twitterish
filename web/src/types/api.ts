@@ -19,3 +19,7 @@ export interface UserApi extends API {
     accessToken?: string
   }
 }
+
+export interface PostApi extends API {
+  pyaload?: { posts: any }
+}

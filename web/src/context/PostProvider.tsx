@@ -5,9 +5,12 @@ import { useState, useCallback, useContext, createContext, useEffect, PropsWithC
 import { useMutation, useQueryClient } from "react-query"
 
 const initialData: Posting = {
-  createPost: async () => {},
-  deletePost: async () => {},
-  editPost: async () => {},
+  createPost: async () => {
+    return { success: false }
+  },
+  deletePost: () => {},
+  editPost: () => {},
+  isProcessing: false,
 }
 const data = createContext(initialData)
 
@@ -15,27 +18,30 @@ export function PostProvider({ children }: PropsWithChildren) {
   const { uid } = useAppSelector(selectUser)
   const queryClient = useQueryClient()
 
-  const cache = (target: string) => queryClient.invalidateQueries([uid, target])
+  const [isProcessing, setIsProcessing] = useState(false)
+  const cache = () => queryClient.invalidateQueries([uid, "post"])
 
   const createFn = useMutation({
     mutationFn: async (post: Post): Promise<API> => {
+      setIsProcessing(true)
       const { data } = await axios.post("post", post)
       return data
     },
     onSuccess: (res) => {
+      setIsProcessing(false)
       console.log(res)
       const { success, message } = res
       if (!success) {
         alert(message)
       }
-      cache("post")
+      cache()
     },
   })
 
   const createPost = useCallback(
-    async (post: Post) => {
+    async (post: Post): Promise<API> => {
       try {
-        createFn.mutate(post)
+        await createFn.mutate(post)
         return { success: true }
       } catch (error: any) {
         return { success: false, message: error.message }
@@ -46,16 +52,18 @@ export function PostProvider({ children }: PropsWithChildren) {
 
   const editFn = useMutation({
     mutationFn: async (post: Post): Promise<API> => {
+      setIsProcessing(true)
       const { data } = await axios.patch("post", post)
       return data
     },
     onSuccess: (res) => {
       console.log(res)
+      setIsProcessing(false)
       const { success, message } = res
       if (!success) {
         alert(message)
       }
-      cache("post")
+      cache()
     },
   })
   const editPost = useCallback(
@@ -67,16 +75,18 @@ export function PostProvider({ children }: PropsWithChildren) {
 
   const deleteFn = useMutation({
     mutationFn: async (id: string): Promise<API> => {
+      setIsProcessing(true)
       const { data } = await axios.patch(`post?id=${id}`)
       return data
     },
     onSuccess: (res) => {
       console.log(res)
+      setIsProcessing(false)
       const { success, message } = res
       if (!success) {
         alert(message)
       }
-      cache("post")
+      cache()
     },
   })
   const deletePost = useCallback(
@@ -86,7 +96,7 @@ export function PostProvider({ children }: PropsWithChildren) {
     [deleteFn]
   )
 
-  return <data.Provider value={{ createPost, editPost, deletePost }}>{children}</data.Provider>
+  return <data.Provider value={{ createPost, editPost, deletePost, isProcessing }}>{children}</data.Provider>
 }
 
 export function usePost() {

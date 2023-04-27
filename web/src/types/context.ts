@@ -29,7 +29,8 @@ export interface Auth extends UserStatus {
 }
 
 export interface Posting {
-  createPost: (post: Post) => Promise<void>
-  editPost: (post: Post) => Promise<void>
-  deletePost: (id: string) => Promise<void>
+  createPost: (post: Post) => Promise<API>
+  editPost: (post: Post) => void
+  deletePost: (id: string) => void
+  isProcessing: boolean
 }

@@ -9,6 +9,8 @@ import { usePost } from "@/context"
 import { selectUser, useAppSelector } from "@/redux"
 import moment from "moment"
 import { momentFormat } from "@/types"
+import { ImSpinner9 } from "react-icons/im"
+import { keyframes } from "@stitches/react"
 
 export default function WriteSup() {
   const [body, setBody] = useState("")
@@ -36,26 +38,28 @@ export default function WriteSup() {
     }
 
     const inputFile = e.target.files[0]
-    const options: Options = { maxSizeMB: 1 }
+    const options: Options = { maxSizeMB: 0.9 }
 
     try {
-      const compressedFile = await imageCompression(inputFile, options)
+      const compressedFile = await imageCompression(inputFile, { maxSizeMB: 1, alwaysKeepResolution: true })
       setFile(compressedFile)
 
       const imgUrl = await imageCompression.getDataUrlFromFile(compressedFile)
-      console.log(imgUrl)
       setFileUrl(imgUrl)
-    } catch (error: any) {}
+    } catch (error: any) {
+      alert(error.message)
+    }
   }, [])
 
   useEffect(() => {
     focusOnBody()
   }, [])
 
-  const { createPost } = usePost()
+  const { createPost, isProcessing } = usePost()
 
   const user = useAppSelector(selectUser)
-  const onSubmit = useCallback(() => {
+
+  const onSubmit = useCallback(async () => {
     const createdAt = moment().format(momentFormat)
     const id = user.uid.concat(new Date().getTime().toString())
     if (bodyText) {
@@ -63,12 +67,57 @@ export default function WriteSup() {
         alert(`사진 또는 ${bodyText}`)
         return focusOnBody()
       }
-      return createPost({ body, img: fileUrl, createdBy: user, createdAt, id })
+      return await createPost({ body, img: fileUrl, createdBy: user, createdAt, id }).then(({ success }) => {
+        if (success) {
+          setBody("")
+          setFile(null)
+          setFileUrl("")
+        }
+      })
     }
-    createPost({ body, img: fileUrl, createdBy: user, createdAt, id })
+    await createPost({ body, img: fileUrl, createdBy: user, createdAt, id }).then(({ success }) => {
+      if (success) {
+        setBody("")
+        setFile(null)
+        setFileUrl("")
+      }
+    })
   }, [body, bodyText, file, fileUrl, createPost])
+
+  const Animation = keyframes({
+    "0%": {
+      color: Colors.BLUE,
+      transform: "rotate(0deg)",
+    },
+    "50%": {
+      color: Colors.RED,
+    },
+    "100%": {
+      transform: "rotate(360deg)",
+      color: Colors.BLUE,
+    },
+  })
   return (
-    <View css={{ maxWidth: 600, width: "100%", margin: "0 auto", rowGap: 10 }}>
+    <View css={{ maxWidth: 600, width: "100%", margin: "0 auto", rowGap: 10, position: "relative" }}>
+      {isProcessing && (
+        <View
+          css={{
+            backgroundColor: "rgba(0,0,0,.05)",
+            borderRadius: 5,
+            width: "100%",
+            height: "100%",
+            top: 0,
+            left: 0,
+            zIndex: 10,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          position="absolute">
+          <View css={{ width: 40, height: 40, borderRadius: 40, fontSize: 40, animation: `${Animation} 3s infinite` }}>
+            <ImSpinner9 />
+          </View>
+        </View>
+      )}
       <UserImage nameOnly />
 
       <View direction="row" css={{ columnGap: 10 }}>
@@ -92,8 +141,7 @@ export default function WriteSup() {
         <Button
           css={{ minWidth: 50, border: `1px solid ${Colors.LIGHTGRAY}`, padding: 0, cursor: "pointer", overFlow: "hidden", borderRadius: 5 }}
           htmlFor={"imgFile"}
-          as="label"
-        >
+          as="label">
           {fileUrl ? <Image src={fileUrl} alt={file != null ? file.name : ""} width={50} height={60} style={{ objectFit: "cover" }} /> : <BsCardImage />}
         </Button>
 
