@@ -39,9 +39,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
       if (!success) {
         return alert(message)
       }
-      setIsLoggedIn(true)
-      cache()
-      dispatch(userHandler(payload?.user))
+      if (payload?.user) {
+        setIsLoggedIn(true)
+        cache()
+        dispatch(userHandler(payload.user))
+      }
     },
   })
 
@@ -90,8 +92,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
         localStorage.setItem("accessToken", accessToken)
         dispatch(userHandler(user))
         setIsLoggedIn(true)
-        alert("어서오세요!")
         router.push({ pathname: "/" })
+        alert("어서오세요!")
       }
     },
   })

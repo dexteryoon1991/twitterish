@@ -16,6 +16,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     return res.send({ success: true, pyaload: { posts: posts ?? [] } })
   } else if (method === "POST") {
     const post = req.body as Post
-    postRef.add(post)
+
+    try {
+      await postRef.add(post)
+      return res.send({ success: true })
+    } catch (error: any) {
+      return res.send({ success: false, message: error.message })
+    }
   }
 }

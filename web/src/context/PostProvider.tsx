@@ -5,9 +5,9 @@ import { useState, useCallback, useContext, createContext, useEffect, PropsWithC
 import { useMutation, useQueryClient } from "react-query"
 
 const initialData: Posting = {
-  createPost: () => {},
-  deletePost: () => {},
-  editPost: () => {},
+  createPost: async () => {},
+  deletePost: async () => {},
+  editPost: async () => {},
 }
 const data = createContext(initialData)
 
@@ -33,8 +33,13 @@ export function PostProvider({ children }: PropsWithChildren) {
   })
 
   const createPost = useCallback(
-    (post: Post) => {
-      createFn.mutate(post)
+    async (post: Post) => {
+      try {
+        createFn.mutate(post)
+        return { success: true }
+      } catch (error: any) {
+        return { success: false, message: error.message }
+      }
     },
     [createFn]
   )

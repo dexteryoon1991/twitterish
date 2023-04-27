@@ -10,8 +10,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   const { email, password } = req.body as EmailAndPassword
   const docRef = dbService.collection(Collection.CREDENTIAL).where("email", "==", email)
   const docSnap = await getDocs(docRef)
-  const users = docSnap.docs.map((doc) => ({ ...doc.data })) as Credential[]
+  const users = docSnap.docs.map((doc) => ({ ...doc.data() })) as Credential[]
 
+  console.log(req.body, users)
   if (!users || !users.length) {
     return res.send({ success: false, message: "존재하지 않는 유저입니다." })
   }

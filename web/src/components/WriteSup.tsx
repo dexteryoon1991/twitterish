@@ -68,7 +68,7 @@ export default function WriteSup() {
     createPost({ body, img: fileUrl, createdBy: user, createdAt, id })
   }, [body, bodyText, file, fileUrl, createPost])
   return (
-    <View css={{ maxWidth: 600, width: "calc(100% - 20px)", margin: "0 auto", rowGap: 10 }}>
+    <View css={{ maxWidth: 600, width: "100%", margin: "0 auto", rowGap: 10 }}>
       <UserImage nameOnly />
 
       <View direction="row" css={{ columnGap: 10 }}>
@@ -92,7 +92,8 @@ export default function WriteSup() {
         <Button
           css={{ minWidth: 50, border: `1px solid ${Colors.LIGHTGRAY}`, padding: 0, cursor: "pointer", overFlow: "hidden", borderRadius: 5 }}
           htmlFor={"imgFile"}
-          as="label">
+          as="label"
+        >
           {fileUrl ? <Image src={fileUrl} alt={file != null ? file.name : ""} width={50} height={60} style={{ objectFit: "cover" }} /> : <BsCardImage />}
         </Button>
 
