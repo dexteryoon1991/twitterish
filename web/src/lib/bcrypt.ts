@@ -8,7 +8,7 @@ const bcrypt = {
   compare: async (password: string, originalPwd: string): Promise<boolean> => {
     return await bcryptjs.compare(password, originalPwd)
   },
-  getUid: (): string => crypto.randomBytes(16).toString("hex"),
+  getUid: (length?: number): string => crypto.randomBytes(length ?? 16).toString("hex"),
 }
 
 export default bcrypt

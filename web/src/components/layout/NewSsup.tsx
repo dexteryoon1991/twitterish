@@ -19,7 +19,7 @@ export default function NewSsup({ closeFn, state }: ModalProps) {
   }, [body])
 
   return (
-    <View css={{ rowGap: 10, padding: 10 }}>
+    <View css={{ rowGap: 10, padding: 10, minHeight: 150 }}>
       <UserImage nameOnly />
       <View>
         <View

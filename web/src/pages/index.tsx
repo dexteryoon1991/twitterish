@@ -15,18 +15,24 @@ export default function Home(props: PostApi) {
       return data
     },
     initialData: props,
+    refetchOnWindowFocus: true,
   })
 
   const [posts, setPosts] = useState<Post[]>([])
   useEffect(() => {
+    if (data?.pyaload?.posts) {
+      const target = data?.pyaload?.posts.sort()
+    }
     setPosts(data?.pyaload?.posts ? data.pyaload.posts : [])
-    console.log(data)
+    console.log(data?.pyaload?.posts)
   }, [data])
 
   return (
-    <View css={{ padding: 10, rowGap: 30 }}>
+    <View css={{ padding: 10, rowGap: 30, maxWidth: 600, margin: "0 auto", width: "calc(100% - 20px)" }}>
       {isLoggedIn && <WriteSup />}
-      {posts?.length > 0 && posts.map((post) => <SupItem key={post.id} {...post} />)}
+      {props?.pyaload?.posts?.map((post, index) => (
+        <SupItem key={index} {...post} />
+      ))}
     </View>
   )
 }

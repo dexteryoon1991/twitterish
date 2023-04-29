@@ -55,6 +55,7 @@ export const View = styled("div", {
         backgroundColor: "rgba(0, 0, 0, .1)",
       },
       fullPage: { width: "100%", height: "100vh", alignItems: "center", justifyContent: "center" },
+      page: { padding: 10, rowGap: 30, maxWidth: 600, margin: "0 auto", width: "calc(100% - 20px)" },
     },
   },
 })

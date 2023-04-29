@@ -1,9 +1,10 @@
-import React, { useEffect } from "react"
+import React, { useCallback, useEffect } from "react"
 import { useAppSelector, selectUser } from "@/redux"
-import { Typo, View } from "@/core"
+import { Button, Typo, View } from "@/core"
 import { FaUserCircle } from "react-icons/fa"
 import { Colors } from "@/lib"
 import { User } from "@/types"
+import { useRouter } from "next/router"
 
 interface Props {
   size?: number
@@ -18,10 +19,23 @@ export default function UserImage({ emailOnly, imgOnly, nameOnly, size, textsOnl
   useEffect(() => {
     console.log(emailOnly, nameOnly, imgOnly, textsOnly, email, name, profileImg)
   }, [])
+
+  const router = useRouter()
+  const onIcon = useCallback(() => {
+    if (!user) {
+      return router.push({ pathname: "/my" })
+    }
+    router.push({
+      pathname: "/[uid]",
+      query: { uid: user.uid },
+    })
+  }, [user])
   return (
     <View direction="row" css={{ columnGap: 10, alignItems: "center" }}>
       {(!textsOnly || !nameOnly || !emailOnly) && (
-        <View css={{ width: size ?? 40, height: size ?? 40, borderRadius: size ?? 40, border: `1px solid ${Colors.LIGHTGRAY}` }}>
+        <Button
+          css={{ padding: 0, minHeight: "auto", width: size ?? 40, height: size ?? 40, borderRadius: size ?? 40, border: `1px solid ${Colors.LIGHTGRAY}` }}
+          onClick={onIcon}>
           {user ? (
             user.profileImg ? (
               <img src={profileImg} alt={"user profile"} />
@@ -33,7 +47,7 @@ export default function UserImage({ emailOnly, imgOnly, nameOnly, size, textsOnl
           ) : (
             <FaUserCircle fontSize={size ?? 40} color={Colors.LIGHTGRAY} />
           )}
-        </View>
+        </Button>
       )}
       {!imgOnly && (
         <View>

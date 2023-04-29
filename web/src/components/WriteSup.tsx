@@ -8,11 +8,15 @@ import Image from "next/image"
 import { usePost } from "@/context"
 import { selectUser, useAppSelector } from "@/redux"
 import moment from "moment"
-import { momentFormat } from "@/types"
+import { momentFormat, Post } from "@/types"
 import { ImSpinner9 } from "react-icons/im"
 import { keyframes } from "@stitches/react"
+import { useRouter } from "next/router"
+import { useQueryClient } from "react-query"
+import ActivityIndicator from "./ActivityIndicator"
 
-export default function WriteSup() {
+type Props = { payload?: Post; payloadFn?: () => void }
+export default function WriteSup({ payload, payloadFn }: Props) {
   const [body, setBody] = useState("")
   const bodyRef = useRef<HTMLTextAreaElement | null>(null)
   const focusOnBody = useCallback(() => {
@@ -32,20 +36,28 @@ export default function WriteSup() {
   const [file, setFile] = useState<File | null>(null)
   const [fileUrl, setFileUrl] = useState("")
 
+  useEffect(() => {
+    if (payload) {
+      setBody(payload.body)
+      payload.img && setFileUrl(payload.img)
+    }
+  }, [payload])
+
   const onChangeFile = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files == null) {
       return
     }
 
     const inputFile = e.target.files[0]
-    const options: Options = { maxSizeMB: 0.9 }
+    const options: Options = { maxSizeMB: 0.2 }
 
     try {
-      const compressedFile = await imageCompression(inputFile, { maxSizeMB: 1, alwaysKeepResolution: true })
-      setFile(compressedFile)
-
-      const imgUrl = await imageCompression.getDataUrlFromFile(compressedFile)
-      setFileUrl(imgUrl)
+      await imageCompression(inputFile, options).then(async (res) => {
+        setFile(res)
+        console.log(res)
+        const imgUrl = await imageCompression.getDataUrlFromFile(res)
+        setFileUrl(imgUrl)
+      })
     } catch (error: any) {
       alert(error.message)
     }
@@ -55,9 +67,13 @@ export default function WriteSup() {
     focusOnBody()
   }, [])
 
-  const { createPost, isProcessing } = usePost()
+  const { createPost, isProcessing, editPost } = usePost()
 
   const user = useAppSelector(selectUser)
+
+  const router = useRouter()
+
+  const queryClient = useQueryClient()
 
   const onSubmit = useCallback(async () => {
     const createdAt = moment().format(momentFormat)
@@ -67,38 +83,41 @@ export default function WriteSup() {
         alert(`사진 또는 ${bodyText}`)
         return focusOnBody()
       }
-      return await createPost({ body, img: fileUrl, createdBy: user, createdAt, id }).then(({ success }) => {
-        if (success) {
-          setBody("")
-          setFile(null)
-          setFileUrl("")
-        }
-      })
+      return payload
+        ? await editPost({ ...payload, body, img: fileUrl }).then(async () => {
+            router.replace(router.asPath)
+            queryClient.invalidateQueries("post")
+            payloadFn && payloadFn()
+          })
+        : await createPost({ body, img: fileUrl, createdBy: user, createdAt, id }).then(({ success }) => {
+            if (success) {
+              setBody("")
+              setFile(null)
+              setFileUrl("")
+              router.replace(router.asPath)
+              queryClient.invalidateQueries("post")
+            }
+          })
     }
-    await createPost({ body, img: fileUrl, createdBy: user, createdAt, id }).then(({ success }) => {
-      if (success) {
-        setBody("")
-        setFile(null)
-        setFileUrl("")
-      }
-    })
-  }, [body, bodyText, file, fileUrl, createPost])
+    payload
+      ? editPost({ ...payload, body, img: fileUrl }).then(async () => {
+          router.replace(router.asPath)
+          queryClient.invalidateQueries("post")
+          payloadFn && payloadFn()
+        })
+      : await createPost({ body, img: fileUrl, createdBy: user, createdAt, id }).then(({ success }) => {
+          if (success) {
+            setBody("")
+            setFile(null)
+            setFileUrl("")
+            router.replace(router.asPath)
+            queryClient.invalidateQueries("post")
+          }
+        })
+  }, [body, bodyText, file, fileUrl, createPost, router, editPost])
 
-  const Animation = keyframes({
-    "0%": {
-      color: Colors.BLUE,
-      transform: "rotate(0deg)",
-    },
-    "50%": {
-      color: Colors.RED,
-    },
-    "100%": {
-      transform: "rotate(360deg)",
-      color: Colors.BLUE,
-    },
-  })
   return (
-    <View css={{ maxWidth: 600, width: "100%", margin: "0 auto", rowGap: 10, position: "relative" }}>
+    <View css={{ width: "100%", margin: "0 auto", rowGap: 10, position: "relative" }}>
       {isProcessing && (
         <View
           css={{
@@ -113,9 +132,7 @@ export default function WriteSup() {
             justifyContent: "center",
           }}
           position="absolute">
-          <View css={{ width: 40, height: 40, borderRadius: 40, fontSize: 40, animation: `${Animation} 3s infinite` }}>
-            <ImSpinner9 />
-          </View>
+          <ActivityIndicator />
         </View>
       )}
       <UserImage nameOnly />

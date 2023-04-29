@@ -1,6 +1,6 @@
 import { useState, useCallback, useContext, createContext, useEffect, PropsWithChildren } from "react"
 import { useAppSelector, selectUser, useAppDispatch, userHandler } from "@/redux"
-import { API, Auth, EmailAndPassword, SignupProps, UserApi } from "@/types"
+import { API, Auth, EmailAndPassword, PasswordAndUid, SendEmail, SignupProps, UserApi } from "@/types"
 import { useMutation, useQueryClient } from "react-query"
 import axios from "axios"
 import { useRouter } from "next/router"
@@ -11,6 +11,7 @@ const initialData: Auth = {
   signOut: () => {},
   isProcessing: false,
   isLoggedIn: false,
+  updatePassword: async () => ({ success: false }),
 }
 const data = createContext(initialData)
 
@@ -26,7 +27,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   const withCredentials = true
   const queryClient = useQueryClient()
-  const cache = () => queryClient.invalidateQueries([user.uid, "user"])
+  const cache = (props?: string) => queryClient.invalidateQueries([user.uid, props])
   const dispatch = useAppDispatch()
 
   const fetchFn = useMutation({
@@ -72,11 +73,14 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }, [])
 
   useEffect(() => {
-    accessToken && fetchUser()
+    if (accessToken) {
+      fetchUser()
+      axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`
+    }
   }, [accessToken])
 
   const signinFn = useMutation({
-    mutationFn: async (signinProps: EmailAndPassword): Promise<any> => {
+    mutationFn: async (signinProps: EmailAndPassword): Promise<UserApi> => {
       const { data } = await axios.post("user/signin", signinProps)
       return data
     },
@@ -89,8 +93,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
       cache()
       if (payload) {
         const { user, accessToken } = payload
-        localStorage.setItem("accessToken", accessToken)
+        localStorage.setItem("accessToken", accessToken!)
+        axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`
         dispatch(userHandler(user))
+        setAccessToken(accessToken!)
         setIsLoggedIn(true)
         router.push({ pathname: "/" })
         alert("어서오세요!")
@@ -107,7 +113,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   )
 
   const signupFn = useMutation({
-    mutationFn: async (signupProps: SignupProps): Promise<any> => {
+    mutationFn: async (signupProps: SignupProps): Promise<UserApi> => {
       const { data } = await axios.post("user", signupProps)
       return data
     },
@@ -117,12 +123,14 @@ export function AuthProvider({ children }: PropsWithChildren) {
       if (!success) {
         return alert(message)
       }
-      cache()
+      cache("user")
       queryClient.invalidateQueries("users")
       if (payload) {
         const { user, accessToken } = payload
-        localStorage.setItem("accessToken", accessToken)
+        localStorage.setItem("accessToken", accessToken!)
+        axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`
         dispatch(userHandler(user))
+        setAccessToken(accessToken!)
         setIsLoggedIn(true)
         alert("환영합니다!")
         router.push({ pathname: "/" })
@@ -140,15 +148,21 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   const signoutFn = useMutation({
     mutationFn: async (): Promise<API> => {
-      const { data } = await axios.get("user/singout", { withCredentials })
+      setIsProcessing(true)
+      console.log("signing out")
+      const { data } = await axios.get("user/signout", { withCredentials })
       return data
     },
     onSuccess: (res) => {
       setIsProcessing(false)
+      console.log(res)
       const { success, message } = res
       if (!success) {
         return alert(message)
       }
+      setIsLoggedIn(false)
+      localStorage.clear()
+      axios.defaults.headers.common.Authorization = null
       alert("로그아웃 되었습니다.")
       dispatch(userHandler())
     },
@@ -159,7 +173,45 @@ export function AuthProvider({ children }: PropsWithChildren) {
     signoutFn.mutate()
   }, [signoutFn])
 
-  return <data.Provider value={{ signIn, signOut, signUp, isProcessing, isLoggedIn }}>{children}</data.Provider>
+  const updatePasswordFn = useMutation({
+    mutationFn: async (props: PasswordAndUid): Promise<UserApi> => {
+      const { data } = await axios.post("user/resetpassword", props)
+      return data
+    },
+    onMutate: () => setIsProcessing(true),
+    onSuccess: (res) => {
+      console.log(res)
+      setIsProcessing(false)
+      const { success, message, payload } = res
+      if (!success) {
+        return alert(message)
+      }
+      queryClient.invalidateQueries([user.uid])
+      if (payload) {
+        const { user, accessToken } = payload
+        localStorage.setItem("accessToken", accessToken!)
+        setAccessToken(accessToken!)
+        dispatch(userHandler(user))
+        setIsLoggedIn(true)
+        alert("비밀번호가 변경되었습니다.")
+        router.push({ pathname: "/" })
+      }
+    },
+  })
+
+  const updatePassword = useCallback(
+    async (props: PasswordAndUid): Promise<API> => {
+      try {
+        await updatePasswordFn.mutate(props)
+        return { success: true }
+      } catch (error: any) {
+        return { success: false, message: error.message }
+      }
+    },
+    [updatePasswordFn]
+  )
+
+  return <data.Provider value={{ signIn, signOut, signUp, isProcessing, isLoggedIn, updatePassword }}>{children}</data.Provider>
 }
 
 export function useAuth() {

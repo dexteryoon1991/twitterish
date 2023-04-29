@@ -28,7 +28,6 @@ export default function Modal({ closeFn, state, animation, title, children }: Pr
           transform: "translateY(-50%)",
           boxShadow: "0 3px 6px rgba(0,0,0, .1)",
           alignItems: "center",
-          minHeight: 220,
         }}>
         <View
           position={"relative"}

@@ -18,8 +18,8 @@ export const useJwt = {
 
     return { accessToken, refreshToken }
   },
-  getAccessToken: (user: User | { uid: string }): { accessToken: string } => {
-    const accessToken = jwt.sign({ uid: user.uid }, secretKey, { expiresIn: "12h" })
+  getAccessToken: (user: User | { uid: string }, expiresIn?: string | number): { accessToken: string } => {
+    const accessToken = jwt.sign({ uid: user.uid }, secretKey, { expiresIn: expiresIn ?? "12h" })
     return {
       accessToken,
     }

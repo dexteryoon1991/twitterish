@@ -19,7 +19,9 @@ export default function Header() {
   }, [router])
   return (
     <>
-      <View position={"fixed"} css={{ top: 0, left: 0, width: "100%", borderBottom: `1px solid ${Colors.LIGHTGRAY}`, backgroundColor: Colors.WHITE }}>
+      <View
+        position={"fixed"}
+        css={{ top: 0, left: 0, width: "100%", borderBottom: `1px solid ${Colors.LIGHTGRAY}`, backgroundColor: Colors.WHITE, zIndex: 10000 }}>
         <View
           position={"relative"}
           direction={"row"}
@@ -28,7 +30,7 @@ export default function Header() {
             height: 60,
             margin: "0 auto",
             width: "100%",
-            maxWidth: 1200,
+            maxWidth: 600,
             justifyContent: "flex-end",
           }}>
           <Button

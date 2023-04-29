@@ -76,6 +76,7 @@ export default function Signup() {
   const onSubmit = useCallback(
     (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault()
+      console.log(email, password, name)
       if (emailText != null) {
         focusOnEmail()
         return alert(emailText)

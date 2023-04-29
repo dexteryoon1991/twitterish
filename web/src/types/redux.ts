@@ -10,8 +10,6 @@ export interface Post {
   createdAt: string
   createdBy: User
   id: any
-  comments?: any[]
-  likes?: User[]
 }
 
 export interface Posts {

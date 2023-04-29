@@ -6,9 +6,11 @@ import { useRouter } from "next/router"
 import React, { useCallback, useEffect, useState } from "react"
 import { FiUser, FiUserX, FiUserPlus } from "react-icons/fi"
 import { IoChatbubbleEllipsesOutline, IoExitOutline } from "react-icons/io5"
+import { GrUserSettings } from "react-icons/gr"
 import { BsHeadset } from "react-icons/bs"
 import Modal from "../Modal"
 import NewSsup from "./NewSsup"
+import Logout from "./Logout"
 
 interface Props {
   state: boolean
@@ -22,8 +24,14 @@ export default function Menubar({ state, menuHandler }: Props) {
       isLoggedIn
         ? [
             {
-              name: "new ssup",
+              name: "my ssup",
+              pathname: "my",
               icon: <IoChatbubbleEllipsesOutline />,
+            },
+            {
+              name: "나의정보",
+              pathname: "/settings",
+              icon: <GrUserSettings />,
             },
             {
               name: "문의하기",
@@ -61,6 +69,10 @@ export default function Menubar({ state, menuHandler }: Props) {
   const newSsupHandler = useCallback(() => {
     setNewSsup((prev) => !prev)
   }, [])
+  const [logout, setLogout] = useState(false)
+  const logoutHandler = useCallback(() => {
+    setLogout((prev) => !prev)
+  }, [])
   const onMenu = useCallback(
     (name: string, pathname?: string) => {
       menuHandler()
@@ -69,6 +81,8 @@ export default function Menubar({ state, menuHandler }: Props) {
       }
       if (name === "new ssup") {
         newSsupHandler()
+      } else if (name === "로그아웃") {
+        logoutHandler()
       }
     },
     [router, menuHandler]
@@ -112,6 +126,9 @@ export default function Menubar({ state, menuHandler }: Props) {
       </View>
       <Modal state={newSsup} closeFn={newSsupHandler} title="New Ssup!">
         <NewSsup state={newSsup} closeFn={newSsupHandler} />
+      </Modal>
+      <Modal state={logout} closeFn={logoutHandler} title="로그아웃">
+        <Logout closeFn={logoutHandler} />
       </Modal>
     </>
   )
