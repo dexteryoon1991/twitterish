@@ -22,7 +22,7 @@ const transporter = nodemailer.createTransport({
   },
 })
 
-export default async (props: MailOptions): Promise<API> => {
+const defaultFunction = async (props: MailOptions): Promise<API> => {
   try {
     const result = await transporter.sendMail(mailOptions(props))
     console.log(result, "result")
@@ -31,3 +31,5 @@ export default async (props: MailOptions): Promise<API> => {
     return { success: false, message: error.message }
   }
 }
+
+export default defaultFunction

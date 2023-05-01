@@ -1,7 +1,7 @@
 import { Button, Typo, View } from "@/core"
 import { Comment, FetchLikeAndCommentApi, momentFormat, Post, User } from "@/types"
 import Image from "next/image"
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 import UserImage from "./UserImage"
 import moment from "moment"
 import { selectUser, useAppSelector } from "@/redux"
@@ -21,7 +21,7 @@ import CommentModal from "./CommentModal"
 
 export default function SupItem(props: Post) {
   const { body, createdAt, createdBy, id, img } = props
-  const queryKey = ["like", "comment", id]
+  const queryKey = useMemo(() => ["like", "comment", id], [id])
 
   const { data } = useQuery({
     queryKey,
@@ -95,7 +95,7 @@ export default function SupItem(props: Post) {
       queryClient.invalidateQueries({ queryKey })
       console.log(success)
     }
-  }, [id, likePost, queryKey, user])
+  }, [id, likePost, queryKey, user, queryClient])
 
   const [isComment, setIsComment] = useState(false)
   const CommentHandler = useCallback(() => {

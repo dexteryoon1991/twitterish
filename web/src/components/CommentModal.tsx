@@ -119,7 +119,7 @@ function Item({ body, createdAt, createdBy, id, queryKey, postId }: Comment & { 
     }
     editHandler()
     return queryClient.invalidateQueries({ queryKey })
-  }, [text, body, id, queryKey, queryClient, editHandler, editComment])
+  }, [text, id, queryKey, queryClient, editHandler, editComment, postId])
 
   const [isDelete, setIsDelete] = useState(false)
   const deleteHandler = useCallback(() => {

@@ -57,7 +57,7 @@ export default function Signin() {
 
   useEffect(() => {
     focusOnEmail()
-  }, [])
+  }, [focusOnEmail])
 
   const onSubmit = useCallback(
     (e: FormEvent<HTMLFormElement>) => {

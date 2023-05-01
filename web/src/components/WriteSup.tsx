@@ -65,7 +65,7 @@ export default function WriteSup({ payload, payloadFn }: Props) {
 
   useEffect(() => {
     focusOnBody()
-  }, [])
+  }, [focusOnBody])
 
   const { createPost, isProcessing, editPost } = usePost()
 
@@ -114,7 +114,7 @@ export default function WriteSup({ payload, payloadFn }: Props) {
             queryClient.invalidateQueries("post")
           }
         })
-  }, [body, bodyText, file, fileUrl, createPost, router, editPost])
+  }, [body, bodyText, file, fileUrl, createPost, router, editPost, focusOnBody, payload, payloadFn, queryClient, user])
 
   return (
     <View css={{ width: "100%", margin: "0 auto", rowGap: 10, position: "relative" }}>

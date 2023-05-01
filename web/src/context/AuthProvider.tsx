@@ -79,7 +79,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       fetchUser()
       axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`
     }
-  }, [accessToken])
+  }, [accessToken, fetchUser])
 
   const signinFn = useMutation({
     mutationFn: async (signinProps: EmailAndPassword): Promise<UserApi> => {
@@ -230,7 +230,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       alert("이름이 변경되었습니다.")
       return { success }
     },
-    [dispatch, updateNameFn, updateUserName]
+    [dispatch, updateNameFn]
   )
 
   const updateProfileImgFn = useMutation(async (profileImg: string): Promise<UpdateProfileImgApi> => {
@@ -251,7 +251,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       alert("프로필 이미지가 변경되었습니다.")
       return { success }
     },
-    [dispatch, updateProfileImgFn, updateUserProfileImg]
+    [dispatch, updateProfileImgFn]
   )
 
   return <data.Provider value={{ signIn, signOut, signUp, isProcessing, isLoggedIn, updatePassword, updateName, updateProfileImg }}>{children}</data.Provider>

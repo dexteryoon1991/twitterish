@@ -1,4 +1,4 @@
-import React, { createContext, PropsWithChildren, useCallback, useContext } from "react"
+import React, { createContext, PropsWithChildren, useCallback, useContext, useMemo } from "react"
 import { API, IdAndBody, Inquiries, Inquiry, InquiryApi, SendEmail } from "@/types"
 import { useMutation, useQueryClient } from "react-query"
 import axios from "axios"
@@ -14,7 +14,7 @@ const initialState: Inquiries = {
 const data = createContext(initialState)
 
 export function InquiryProvider({ children }: PropsWithChildren) {
-  const inquiryQueryKey = ["inquiry"]
+  const inquiryQueryKey = useMemo(() => ["inquiry"], [])
   const queryClient = useQueryClient()
   const url = "inquiry"
 
@@ -89,7 +89,7 @@ export function InquiryProvider({ children }: PropsWithChildren) {
       }
       return { success }
     },
-    [queryClient, inquiryQueryKey, answerFn]
+    [answerFn]
   )
 
   const findFn = useMutation(async (email: string): Promise<InquiryApi> => {

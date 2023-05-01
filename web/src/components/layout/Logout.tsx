@@ -8,7 +8,7 @@ export default function Logout({ closeFn }: Props) {
   const onSignout = useCallback(() => {
     closeFn()
     signOut()
-  }, [signOut])
+  }, [signOut, closeFn])
 
   return (
     <View css={{ padding: 20, rowGap: 10 }}>

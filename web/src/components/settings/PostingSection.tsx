@@ -7,6 +7,7 @@ import { BsImage, BsPlusCircle } from "react-icons/bs"
 import { Colors } from "@/lib"
 import Modal from "../Modal"
 import MyPost from "./MyPost"
+import Image from "next/image"
 
 export default function PostingSection({ uid }: User) {
   const { data } = useQuery([uid, "post"], async (): Promise<MyPostApi> => {
@@ -76,7 +77,7 @@ function PostItem({ img, body, newItem, id }: { newItem?: boolean; body?: string
           {newItem ? (
             <BsPlusCircle size={40} color={Colors.GRAY} />
           ) : img ? (
-            <img src={img} alt="" style={{ height: "100%", objectFit: "cover" }} />
+            <Image src={img} alt="" width={100} height={100} style={{ width: "auto", height: "100%", objectFit: "cover" }} />
           ) : (
             <BsImage size={40} color={"rgba(0, 0, 0, .1)"} />
           )}

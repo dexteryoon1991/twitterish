@@ -13,9 +13,6 @@ export default function LostNfound() {
       router.push({ pathname: "/" })
     }
   }, [router, isLoggedIn])
-  if (isLoggedIn) {
-    return null
-  }
 
   const [email, setEmail] = useState("dexteryoon@icloud.com")
   const emailRef = useRef<HTMLInputElement | null>(null)
@@ -60,7 +57,7 @@ export default function LostNfound() {
 
   useEffect(() => {
     focusOnEmail()
-  }, [])
+  }, [focusOnEmail])
 
   const { isSending, sendResetPasswordEmail } = useEmail()
 
@@ -85,6 +82,9 @@ export default function LostNfound() {
     },
     [email, name, emailText, nameText, sendResetPasswordEmail, focusOnEmail, focusOnName, router]
   )
+  if (isLoggedIn) {
+    return null
+  }
   return (
     <View css={{ justifyContent: "center", alignItems: "center", height: "calc(100vh - 120px)" }}>
       {isSending ? (

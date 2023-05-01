@@ -26,7 +26,7 @@ export default function InquiryItem(props: Inquiry) {
     }
     console.log("no password needed")
     fullHandler()
-  }, [router, isLoggedIn, passwordHandler, fullHandler])
+  }, [isLoggedIn, passwordHandler, fullHandler])
   return (
     <>
       <Button

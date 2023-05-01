@@ -1,6 +1,6 @@
 import { Button, Typo, View } from "@/core"
 import { CSSProperties } from "@stitches/react"
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { AiOutlineHeart, AiFillHeart, AiOutlineEdit, AiFillEdit } from "react-icons/ai"
 import { RiDeleteBackLine, RiDeleteBackFill } from "react-icons/ri"
 import { MdOutlineCancel, MdCancel } from "react-icons/md"
@@ -11,6 +11,7 @@ import axios from "axios"
 import { usePost } from "@/context"
 import { selectUser, useAppSelector } from "@/redux"
 import { Colors } from "@/lib"
+import Image from "next/image"
 
 interface Props {
   body?: string
@@ -18,7 +19,7 @@ interface Props {
   id?: string
 }
 export default function MyPost({ body, img, id }: Props) {
-  const queryKey = ["like", "comment", id]
+  const queryKey = useMemo(() => ["like", "comment", id], [id])
   const { data } = useQuery(queryKey, async (): Promise<FetchLikeAndCommentApi> => {
     const { data } = await axios.get("fetch/likecomment", { params: { id } })
     return data
@@ -56,7 +57,7 @@ export default function MyPost({ body, img, id }: Props) {
       queryClient.invalidateQueries({ queryKey })
       console.log(success)
     }
-  }, [id, likePost, queryKey, user])
+  }, [id, likePost, queryKey, user, queryClient])
 
   const [commenting, setCommenting] = useState(false)
   const commentHandler = useCallback(() => setCommenting((prev) => !prev), [])
@@ -65,7 +66,7 @@ export default function MyPost({ body, img, id }: Props) {
     <View css={{ maxWidth: 600, height: "calc(100% - 40px)" }}>
       {img && (
         <View css={{ backgroundColor: "gainsboro" }}>
-          <img src={img} alt="" />
+          <Image src={img} alt="" width={100} height={100} style={{ width: "100%", height: "auto" }} />
         </View>
       )}
       <View direction={"row"} css={{ columnGap: 10, padding: "0 10px" }}>

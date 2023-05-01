@@ -9,9 +9,6 @@ import { useQuery, useQueryClient } from "react-query"
 
 export default function My(props: MyPostApi) {
   const { isLoggedIn } = useAuth()
-  if (!isLoggedIn) {
-    return null
-  }
 
   const { uid } = useAppSelector(selectUser)
   const queryClient = useQueryClient()
@@ -24,6 +21,10 @@ export default function My(props: MyPostApi) {
     },
     { initialData: props, onSuccess: (res) => console.log(res) }
   )
+
+  if (!isLoggedIn) {
+    return null
+  }
   return (
     <View css={{ padding: 10, rowGap: 30, maxWidth: 600, margin: "0 auto", width: "calc(100% - 20px)" }}>
       <WriteSup />

@@ -38,7 +38,7 @@ export default function SearchInquiry() {
 
   useEffect(() => {
     focusOnEmail()
-  }, [])
+  }, [focusOnEmail])
 
   const { findInquiry } = useInquiry()
   const onSubmit = useCallback(
@@ -57,7 +57,7 @@ export default function SearchInquiry() {
         setInquiries(payload.inquiries)
       }
     },
-    [email]
+    [email, emailText, findInquiry]
   )
   return (
     <>

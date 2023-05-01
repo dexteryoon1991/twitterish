@@ -97,9 +97,11 @@ export default function Verify(props: VerificationCodeApi) {
       }
 
       if (passwordText) {
+        focusOnPassword()
         return alert(passwordText)
       }
       if (confirmPasswordText) {
+        focusOnConfirmPassword()
         return alert(confirmPasswordText)
       }
 
@@ -109,12 +111,12 @@ export default function Verify(props: VerificationCodeApi) {
         return alert(error.message)
       }
     },
-    [password, confirmPassword, passwordText, confirmPasswordText, focusOnPassword, focusOnConfirmPassword, isVerified, data]
+    [password, passwordText, confirmPasswordText, focusOnPassword, focusOnConfirmPassword, isVerified, data, updatePassword, verificationCode]
   )
 
   useEffect(() => {
     focusOnVerificationCode()
-  }, [])
+  }, [focusOnVerificationCode])
 
   useEffect(() => {
     if (verificationCode === data?.verificationCode) {
@@ -122,7 +124,7 @@ export default function Verify(props: VerificationCodeApi) {
       alert("인증되었습니다. 새로운 비밀번호를 입력해주세요.")
       focusOnPassword()
     } else setIsVerified(false)
-  }, [data?.verificationCode, verificationCode])
+  }, [data?.verificationCode, verificationCode, focusOnPassword])
   return (
     <View css={{ justifyContent: "center", alignItems: "center", height: "calc(100vh - 120px)" }}>
       <View as="form" onSubmit={onSubmit} css={{ rowGap: 20 }}>

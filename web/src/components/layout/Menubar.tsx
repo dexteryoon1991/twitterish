@@ -94,7 +94,7 @@ export default function Menubar({ state, menuHandler }: Props) {
         logoutHandler()
       }
     },
-    [router, menuHandler]
+    [router, menuHandler, logoutHandler, newSsupHandler]
   )
 
   return (

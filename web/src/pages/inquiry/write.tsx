@@ -90,7 +90,7 @@ export default function Inquiry() {
       setEmail(user.email)
       focusOnBody()
     } else focusOnEmail()
-  }, [isLoggedIn, user])
+  }, [isLoggedIn, user, focusOnBody, focusOnEmail])
 
   const router = useRouter()
   const { createInquiry } = useInquiry()
@@ -119,7 +119,7 @@ export default function Inquiry() {
         router.push({ pathname: "/inquiry" })
       }
     },
-    [title, email, body, emailText, focusOnEmail, bodyText, focusOnBody, focusOnTitle, confirmHandler, createInquiry, isLoggedIn, focusOnPassword, router]
+    [title, email, body, emailText, focusOnEmail, bodyText, focusOnBody, confirmHandler, createInquiry, isLoggedIn, focusOnPassword, router, passwordText]
   )
 
   return (

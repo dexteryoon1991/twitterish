@@ -45,7 +45,7 @@ export default function UserInfoSection({ email, name, uid, profileImg }: User) 
       }
       updateName(username).then((res) => (res.success ? editHandler() : console.log(res)))
     },
-    [username, name, focusOnUsername, editHandler]
+    [username, name, focusOnUsername, editHandler, updateName]
   )
 
   const [file, setFile] = useState<File | null>(null)
@@ -84,7 +84,7 @@ export default function UserInfoSection({ email, name, uid, profileImg }: User) 
             position: "relative",
           }}>
           <View as="label" htmlFor="imgUpload" css={{ width: "100%", height: "100%", position: "absolute", top: 0, left: 0, cursor: "pointer" }} />
-          <img src={profileImg ?? ""} alt="" width={80} height={80} />
+          <Image src={profileImg ?? ""} alt="" width={80} height={80} />
           {/* {profileImg || fileImg ? <Image src={profileImg || fileImg} alt="user profile image" width={80} height={80} /> : <FaUserCircle size={80} />} */}
           <input type="file" onChange={onChangeFile} style={{ display: "none" }} id="imgUpload" accept="image/jpg,image/png,image/jpeg,image/gif" />
         </Button>

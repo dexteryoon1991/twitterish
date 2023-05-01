@@ -70,7 +70,7 @@ export default function Signup() {
 
   useEffect(() => {
     focusOnEmail()
-  }, [])
+  }, [focusOnEmail])
 
   const { signUp, isLoggedIn } = useAuth()
   const onSubmit = useCallback(
@@ -91,7 +91,7 @@ export default function Signup() {
       }
       signUp({ email, password, name })
     },
-    [email, password, signUp, emailText, passwordText, focusOnEmail, focusOnPassword]
+    [email, password, signUp, emailText, passwordText, focusOnPassword, focusOnEmail, focusOnName, name, nameText]
   )
 
   const router = useRouter()
