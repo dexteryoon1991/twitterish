@@ -23,9 +23,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   const router = useRouter()
   const user = useAppSelector(selectUser)
-  useEffect(() => {
-    console.log(user && isLoggedIn ? user : "need to login")
-  }, [user, isLoggedIn])
 
   const withCredentials = true
   const queryClient = useQueryClient()
