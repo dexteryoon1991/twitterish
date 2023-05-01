@@ -9,12 +9,12 @@ export default function Logout({ closeFn, message, cancelBtn, okBtn }: Props) {
   const onSignout = useCallback(() => {
     closeFn()
     signOut()
-  }, [signOut])
+  }, [signOut, closeFn])
 
   const onCancel = useCallback(() => {
     closeFn()
     cancelBtn?.onPress && cancelBtn.onPress()
-  }, [cancelBtn?.onPress, closeFn])
+  }, [closeFn, cancelBtn])
 
   const onOk = useCallback(() => {
     closeFn()

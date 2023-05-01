@@ -31,7 +31,7 @@ export default function CommentModal({ comments, state, closeFn, queryKey, id }:
   useEffect(() => {
     console.log(state ? comments : "")
     state && focusOnBody()
-  }, [comments, state])
+  }, [comments, state, focusOnBody])
 
   const onChangeBody = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
     setBody(e.target.value)
@@ -57,7 +57,7 @@ export default function CommentModal({ comments, state, closeFn, queryKey, id }:
     }
     setBody("")
     queryClient.invalidateQueries({ queryKey })
-  }, [body, createComment, user, bodyText, queryKey, queryClient])
+  }, [body, createComment, user, bodyText, queryKey, queryClient, id])
   return (
     <View css={{ padding: 10, borderRadius: 5, backgroundColor: "rgba(0,0,0,.02)", columnGap: 10, justifyContent: "center", width: "100%", rowGap: 10 }}>
       <View css={{ rowGap: 10 }}>
@@ -108,7 +108,7 @@ function Item({ body, createdAt, createdBy, id, queryKey, postId }: Comment & { 
   }, [])
   useEffect(() => {
     isEdit && focusOnText()
-  }, [isEdit])
+  }, [isEdit, focusOnText])
 
   const { editComment, deleteComment } = usePost()
   const queryClient = useQueryClient()
@@ -119,7 +119,7 @@ function Item({ body, createdAt, createdBy, id, queryKey, postId }: Comment & { 
     }
     editHandler()
     return queryClient.invalidateQueries({ queryKey })
-  }, [text, body, id, queryKey, queryClient, editHandler])
+  }, [text, body, id, queryKey, queryClient, editHandler, editComment])
 
   const [isDelete, setIsDelete] = useState(false)
   const deleteHandler = useCallback(() => {
