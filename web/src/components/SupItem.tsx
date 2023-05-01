@@ -29,9 +29,6 @@ export default function SupItem(props: Post) {
       const { data } = await axios.get("fetch/likecomment", { params: { id } })
       return data
     },
-    onSuccess: (res) => {
-      console.log("fetched", res)
-    },
   })
 
   const user = useAppSelector(selectUser)
@@ -98,7 +95,7 @@ export default function SupItem(props: Post) {
       queryClient.invalidateQueries({ queryKey })
       console.log(success)
     }
-  }, [id, deletePost, queryKey])
+  }, [id, likePost, queryKey, user])
 
   const [isComment, setIsComment] = useState(false)
   const CommentHandler = useCallback(() => {

@@ -10,6 +10,7 @@ import { BiCheckCircle } from "react-icons/bi"
 import { FaUserCircle } from "react-icons/fa"
 import Input from "../Input"
 import imageCompression from "browser-image-compression"
+import { useAuth } from "@/context"
 
 export default function UserInfoSection({ email, name, uid, profileImg }: User) {
   const [username, setUsername] = useState("")
@@ -33,6 +34,8 @@ export default function UserInfoSection({ email, name, uid, profileImg }: User) 
     })
   }, [focusOnUsername, setUsername, name])
 
+  const { updateName, updateProfileImg } = useAuth()
+
   const onSubmit = useCallback(
     (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault()
@@ -40,29 +43,34 @@ export default function UserInfoSection({ email, name, uid, profileImg }: User) 
         focusOnUsername()
         return alert("변경사항이 없습니다.")
       }
+      updateName(username).then((res) => (res.success ? editHandler() : console.log(res)))
     },
-    [username, name, focusOnUsername]
+    [username, name, focusOnUsername, editHandler]
   )
 
   const [file, setFile] = useState<File | null>(null)
   const [fileImg, setFileImg] = useState("")
-  const onChangeFile = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files == null) {
-      return
-    }
-    try {
-      await imageCompression(e.target.files[0], { maxSizeMB: 0.2 }).then(async (res) => {
-        setFile(res)
-        const imgUrl = await imageCompression.getDataUrlFromFile(res)
-        setFileImg(imgUrl)
-      })
-    } catch (error: any) {
-      alert(error.message)
-    }
-  }, [])
+  const onChangeFile = useCallback(
+    async (e: ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files == null) {
+        return
+      }
+      try {
+        await imageCompression(e.target.files[0], { maxSizeMB: 0.2 }).then(async (res) => {
+          setFile(res)
+          const imgUrl = await imageCompression.getDataUrlFromFile(res)
+          setFileImg(imgUrl)
+          updateProfileImg(imgUrl).then((res) => console.log(res))
+        })
+      } catch (error: any) {
+        alert(error.message)
+      }
+    },
+    [updateProfileImg]
+  )
   return (
     <View css={{ rowGap: 10 }}>
-      <View direction={"row"} css={{ columnGap: 20, alignItems: "center" }}>
+      <View direction={"row"} css={{ columnGap: 20, alignItems: "center", justifyContent: "center" }}>
         <Button
           css={{
             padding: 0,
@@ -76,7 +84,8 @@ export default function UserInfoSection({ email, name, uid, profileImg }: User) 
             position: "relative",
           }}>
           <View as="label" htmlFor="imgUpload" css={{ width: "100%", height: "100%", position: "absolute", top: 0, left: 0, cursor: "pointer" }} />
-          {profileImg || fileImg ? <Image src={profileImg || fileImg ?? ""} alt="user profile image" width={80} height={80} /> : <FaUserCircle size={80} />}
+          <img src={profileImg ?? ""} alt="" width={80} height={80} />
+          {/* {profileImg || fileImg ? <Image src={profileImg || fileImg} alt="user profile image" width={80} height={80} /> : <FaUserCircle size={80} />} */}
           <input type="file" onChange={onChangeFile} style={{ display: "none" }} id="imgUpload" accept="image/jpg,image/png,image/jpeg,image/gif" />
         </Button>
 
@@ -115,10 +124,10 @@ export default function UserInfoSection({ email, name, uid, profileImg }: User) 
           <Typo css={{ fontSize: 13 }}>{email}</Typo>
         </View>
       </View>
-      <Button css={{ flexDirection: "row", alignItems: "center", columnGap: 10, width: 80, padding: 5, minHeight: "auto" }}>
+      {/* <Button css={{ flexDirection: "row", alignItems: "center", columnGap: 10, width: 80, padding: 5, minHeight: "auto" }}>
         <Typo>edit</Typo>
         <IoIosSettings size={20} />
-      </Button>
+      </Button> */}
     </View>
   )
 }

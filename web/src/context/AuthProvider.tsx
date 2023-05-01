@@ -1,6 +1,6 @@
 import { useState, useCallback, useContext, createContext, useEffect, PropsWithChildren } from "react"
-import { useAppSelector, selectUser, useAppDispatch, userHandler } from "@/redux"
-import { API, Auth, EmailAndPassword, PasswordAndUid, SendEmail, SignupProps, UserApi } from "@/types"
+import { useAppSelector, selectUser, useAppDispatch, userHandler, updateUserName, updateUserProfileImg } from "@/redux"
+import { API, Auth, EmailAndPassword, PasswordAndUid, SendEmail, SignupProps, UpdateNameApi, UpdateProfileImgApi, UserApi } from "@/types"
 import { useMutation, useQueryClient } from "react-query"
 import axios from "axios"
 import { useRouter } from "next/router"
@@ -12,6 +12,8 @@ const initialData: Auth = {
   isProcessing: false,
   isLoggedIn: false,
   updatePassword: async () => ({ success: false }),
+  updateName: async () => ({ success: false }),
+  updateProfileImg: async () => ({ success: false }),
 }
 const data = createContext(initialData)
 
@@ -211,7 +213,48 @@ export function AuthProvider({ children }: PropsWithChildren) {
     [updatePasswordFn]
   )
 
-  return <data.Provider value={{ signIn, signOut, signUp, isProcessing, isLoggedIn, updatePassword }}>{children}</data.Provider>
+  const updateNameFn = useMutation(async (name: string): Promise<UpdateNameApi> => {
+    const { data } = await axios.post("user/update/name", { name })
+    return data
+  })
+
+  const updateName = useCallback(
+    async (newName: string): Promise<UpdateNameApi> => {
+      const { success, message, name } = await updateNameFn.mutateAsync(newName)
+      if (!success) {
+        alert(message)
+        return { success }
+      }
+
+      dispatch(updateUserName(name!))
+      alert("이름이 변경되었습니다.")
+      return { success }
+    },
+    [dispatch, updateNameFn, updateUserName]
+  )
+
+  const updateProfileImgFn = useMutation(async (profileImg: string): Promise<UpdateProfileImgApi> => {
+    const { data } = await axios.post("user/update/profileimg", { img: profileImg })
+    return data
+  })
+
+  const updateProfileImg = useCallback(
+    async (img: string): Promise<UpdateProfileImgApi> => {
+      const { success, message, profileImg } = await updateProfileImgFn.mutateAsync(img)
+      console.log(message)
+      if (!success) {
+        alert(message)
+        return { success }
+      }
+
+      dispatch(updateUserProfileImg(profileImg!))
+      alert("프로필 이미지가 변경되었습니다.")
+      return { success }
+    },
+    [dispatch, updateProfileImgFn, updateUserProfileImg]
+  )
+
+  return <data.Provider value={{ signIn, signOut, signUp, isProcessing, isLoggedIn, updatePassword, updateName, updateProfileImg }}>{children}</data.Provider>
 }
 
 export function useAuth() {

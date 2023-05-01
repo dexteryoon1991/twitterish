@@ -25,7 +25,7 @@ export default function Menubar({ state, menuHandler }: Props) {
         ? [
             {
               name: "my ssup",
-              pathname: "my",
+              pathname: "/my",
               icon: <IoChatbubbleEllipsesOutline />,
             },
             {
@@ -59,6 +59,11 @@ export default function Menubar({ state, menuHandler }: Props) {
               pathname: "/lost&found",
               icon: <FiUserX />,
             },
+            {
+              name: "문의하기",
+              pathname: "/inquiry",
+              icon: <BsHeadset />,
+            },
           ]
     )
   }, [isLoggedIn])
@@ -73,6 +78,10 @@ export default function Menubar({ state, menuHandler }: Props) {
   const logoutHandler = useCallback(() => {
     setLogout((prev) => !prev)
   }, [])
+
+  useEffect(() => {
+    console.log(router.pathname)
+  }, [router])
   const onMenu = useCallback(
     (name: string, pathname?: string) => {
       menuHandler()
@@ -119,7 +128,7 @@ export default function Menubar({ state, menuHandler }: Props) {
                 backgroundColor: "rgba(0,0,0,.03)",
               },
             }}>
-            <View css={{ fontSize: 20 }}>{icon}</View>
+            <View css={{ fontSize: 20, color: router.pathname === pathname ? Colors.BLUE : undefined }}>{icon}</View>
             {name}
           </Button>
         ))}

@@ -91,6 +91,7 @@ export default function CommentModal({ comments, state, closeFn, queryKey, id }:
 }
 
 function Item({ body, createdAt, createdBy, id, queryKey, postId }: Comment & { queryKey: any[]; postId: string }) {
+  const { uid } = useAppSelector(selectUser)
   const [isEdit, setIsEdit] = useState(false)
   const editHandler = useCallback(() => {
     setIsEdit((prev) => !prev)
@@ -154,19 +155,21 @@ function Item({ body, createdAt, createdBy, id, queryKey, postId }: Comment & { 
         ) : (
           <Typo css={{ width: "calc(100% - 200px)", flex: 1 }}>{body}</Typo>
         )}
-        <View direction="row">
-          {isEdit && (
-            <Button css={{ border: "none", padding: 5, fontSize: 15 }} onClick={onEditSubmit}>
-              <BiCheckCircle />
+        {uid === createdBy.uid && (
+          <View direction="row">
+            {isEdit && (
+              <Button css={{ border: "none", padding: 5, fontSize: 15 }} onClick={onEditSubmit}>
+                <BiCheckCircle />
+              </Button>
+            )}
+            <Button onClick={editHandler} css={{ border: "none", padding: 5, fontSize: 15 }}>
+              {isEdit ? <MdOutlineCancel /> : <AiFillEdit />}
             </Button>
-          )}
-          <Button onClick={editHandler} css={{ border: "none", padding: 5, fontSize: 15 }}>
-            {isEdit ? <MdOutlineCancel /> : <AiFillEdit />}
-          </Button>
-          <Button onClick={deleteHandler} css={{ border: "none", padding: 5, fontSize: 15 }}>
-            <RiDeleteBackFill />
-          </Button>
-        </View>
+            <Button onClick={deleteHandler} css={{ border: "none", padding: 5, fontSize: 15 }}>
+              <RiDeleteBackFill />
+            </Button>
+          </View>
+        )}
       </View>
       <Modal state={isDelete} closeFn={deleteHandler} title="삭제?!?!">
         <Confirm closeFn={deleteHandler} message="포스팅을 삭제하시겠습니까?" okBtn={{ name: "삭제", onPress: onDelete }} />

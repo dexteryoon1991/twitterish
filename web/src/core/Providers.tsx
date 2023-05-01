@@ -2,7 +2,7 @@ import React, { PropsWithChildren } from "react"
 import { QueryClient, QueryClientProvider } from "react-query"
 import { Provider } from "react-redux"
 import { store } from "@/redux"
-import { AuthProvider, EmailProvider, PostProvider } from "@/context"
+import { AuthProvider, EmailProvider, InquiryProvider, PostProvider } from "@/context"
 
 export default function Providers({ children }: PropsWithChildren) {
   return (
@@ -10,7 +10,9 @@ export default function Providers({ children }: PropsWithChildren) {
       <Provider store={store}>
         <AuthProvider>
           <PostProvider>
-            <EmailProvider>{children}</EmailProvider>
+            <EmailProvider>
+              <InquiryProvider>{children}</InquiryProvider>
+            </EmailProvider>
           </PostProvider>
         </AuthProvider>
       </Provider>

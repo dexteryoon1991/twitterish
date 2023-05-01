@@ -14,6 +14,7 @@ export enum Collection {
   VERIFICATIONCODE = "verificationcode",
   LIKE = "like",
   COMMENT = "comment",
+  INQUIRY = "inquiry",
 }
 
 export interface UserApi extends API {

@@ -18,6 +18,12 @@ const slice = createSlice({
       const user = action.payload
       return user ? { ...user } : { ...initialState }
     },
+    updateUserName(state, action: PayloadAction<string>) {
+      state.name = action.payload
+    },
+    updateUserProfileImg(state, action: PayloadAction<string>) {
+      state.profileImg = action.payload
+    },
   },
 })
 
@@ -25,4 +31,4 @@ export const user = slice.reducer
 
 export const selectUser = (state: RootState) => state.user
 
-export const { userHandler } = slice.actions
+export const { userHandler, updateUserName, updateUserProfileImg } = slice.actions

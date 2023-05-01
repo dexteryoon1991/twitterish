@@ -49,10 +49,12 @@ export const View = styled("div", {
     },
     type: {
       shadow: {
-        position: "absolulte",
+        position: "absolute",
         width: "100%",
         height: "100%",
         backgroundColor: "rgba(0, 0, 0, .1)",
+        left: 0,
+        top: 0,
       },
       fullPage: { width: "100%", height: "100vh", alignItems: "center", justifyContent: "center" },
       page: { padding: 10, rowGap: 30, maxWidth: 600, margin: "0 auto", width: "calc(100% - 20px)" },

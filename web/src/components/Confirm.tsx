@@ -12,13 +12,13 @@ export default function Logout({ closeFn, message, cancelBtn, okBtn }: Props) {
   }, [signOut])
 
   const onCancel = useCallback(() => {
-    cancelBtn?.onPress && cancelBtn.onPress()
     closeFn()
+    cancelBtn?.onPress && cancelBtn.onPress()
   }, [cancelBtn?.onPress, closeFn])
 
   const onOk = useCallback(() => {
-    okBtn?.onPress && okBtn.onPress()
     closeFn()
+    okBtn?.onPress && okBtn.onPress()
   }, [okBtn, closeFn])
   return (
     <View css={{ padding: "20px 20px 30px", rowGap: 10 }}>

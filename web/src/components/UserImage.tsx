@@ -34,11 +34,19 @@ export default function UserImage({ emailOnly, imgOnly, nameOnly, size, textsOnl
     <View direction="row" css={{ columnGap: 10, alignItems: "center" }}>
       {(!textsOnly || !nameOnly || !emailOnly) && (
         <Button
-          css={{ padding: 0, minHeight: "auto", width: size ?? 40, height: size ?? 40, borderRadius: size ?? 40, border: `1px solid ${Colors.LIGHTGRAY}` }}
+          css={{
+            padding: 0,
+            minHeight: "auto",
+            width: size ?? 40,
+            height: size ?? 40,
+            borderRadius: size ?? 40,
+            border: `1px solid ${Colors.LIGHTGRAY}`,
+            overflow: "hidden",
+          }}
           onClick={onIcon}>
           {user ? (
             user.profileImg ? (
-              <img src={profileImg} alt={"user profile"} />
+              <img src={profileImg} alt={"user profile"} width={40} height={40} />
             ) : (
               <FaUserCircle fontSize={size ?? 40} color={Colors.LIGHTGRAY} />
             )
